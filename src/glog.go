@@ -120,7 +120,7 @@ func New(args ...interface{}) (*Log, error) {
 	var err error
 	//existed Log
 	if glog != nil {
-		return glog, err
+		return glog, nil
 	}
 
 	var (
@@ -228,10 +228,7 @@ func (log *Log) Debug(logStr string) {
  */
 func (log *Log) Close() {
 	logChan <- logMsg{level: SIGNAL_CLOSE, str: ""}
-	for {
-		if log.isClosed {
-			break
-		}
+	for !log.isClosed {
 		time.Sleep(10 * time.Millisecond)
 	}
 	close(logChan)
@@ -252,7 +249,7 @@ func (log *Log) write(level Level, logStr *string) {
 	logMsg := logMsg{level: level, str: format(level.String(), *logStr)}
 
 	//print log to stdout
-	if glog.levelConf[level].IsPrint == true {
+	if glog.levelConf[level].IsPrint {
 		fmt.Print(logMsg.str)
 	}
 
@@ -279,7 +276,6 @@ func runLogChan() {
 		panic(fmt.Sprintf("glog:split config error:%s", err.Error()))
 	} else {
 		gruntime.split = split{id: splitId, value: splitValue}
-
 	}
 
 	//init glog runtime
@@ -361,12 +357,10 @@ func initRuntime() {
  */
 func flush(fileName string, fd *os.File) {
 	for i := 0; i < gruntime.bufsCounter[fileName]; i++ {
-		logStr := gruntime.writeBufs[fileName][i]
-		fd.WriteString(logStr)
+		fd.WriteString(gruntime.writeBufs[fileName][i])
 	}
 	fd.Sync()
 }
-
 
 func flushAll() {
 	for fileName, index := range gruntime.bufsCounter {
@@ -374,20 +368,19 @@ func flushAll() {
 			fd, err := getFile(fileName)
 			if fd != nil && err == nil {
 				flush(fileName, fd)
-				//gruntime.writeBufs[fileName] = make([]string, glog.Buf)
 			} else {
 				panic(fmt.Sprintf("glog:create file error:%s", err.Error()))
-			}				
+			}
 		}
 	}
-	restoreCounter()  //Restore the BufsCounter and fileSizeCounter
+	restoreCounter() //Restore the BufsCounter and fileSizeCounter
 }
 
 /**
  * Restore the BufsCounter and fileSizeCounter
  */
 func restoreCounter() {
-	for fileName, _ := range gruntime.bufsCounter {
+	for fileName := range gruntime.bufsCounter {
 		gruntime.bufsCounter[fileName] = 0
 		gruntime.fileSizeCounter[fileName] = 0
 	}
@@ -398,10 +391,8 @@ func restoreCounter() {
  */
 func getFile(fileName string) (fd *os.File, err error) {
 	var suffix, newFileName string //init file suffix
-	if err != nil {
-		return
-	}
-	//make suffix by define
+
+	//make suffix
 	switch gruntime.split.id {
 	case SPLIT_DAY:
 		suffix = time.Now().Format("060102")
@@ -416,7 +407,7 @@ func getFile(fileName string) (fd *os.File, err error) {
 		if gruntime.files[fileName] != nil {
 			stat, err := gruntime.files[fileName].Stat()
 
-			if err != nil { //get file stat err
+			if err != nil { //get file status err
 				return fd, err
 			}
 
