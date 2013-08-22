@@ -46,10 +46,10 @@ type Level byte
 //struct of Log
 type Log struct {
 	//public
-	Buf       int           //if too small, will blocking the write log
+	Buf       int //if too small, will blocking the write log
 	FlushTime time.Duration
-	Split     string        //split log file by "day", "hour", "15min" or "100m"
-	Level     byte          //level mode, example: "ERROR"+"WARNING"+"NOTICE" = 1+2+4 = 7
+	Split     string //split log file by "day", "hour", "15min" or "100m"
+	Level     byte   //level mode, example: "ERROR"+"WARNING"+"NOTICE" = 1+2+4 = 7
 	FileMode  os.FileMode
 	//private
 	isClosed  bool
@@ -136,10 +136,10 @@ func New(args ...interface{}) (*Log, error) {
 		//default Log
 		log = Log{
 			Buf:       DEFAULT_BUFFER_SIZE,
-			FlushTime: 1 * time.Second, 
-			Split:     "day",               //split log file by "day", "hour", "10min" minutes or "10m" bytes
-			Level:     7,                   // WARNING + ERROR + NOTICE
-			FileMode:  0400,                //permission bits, see os.FileMode
+			FlushTime: 1 * time.Second,
+			Split:     "day", //split log file by "day", "hour", "10min" minutes or "10m" bytes
+			Level:     7,     // WARNING + ERROR + NOTICE
+			FileMode:  0400,  //permission bits, see os.FileMode
 			levelConf: levelConf,
 			isClosed:  false,
 		}
@@ -202,25 +202,26 @@ func New(args ...interface{}) (*Log, error) {
  *  Usage like:
  *	log.Error("err msg") or log.Warn("warn msg")
  */
-func (log *Log) Error(logStr string) {
-	log.write(ERROR, &logStr)
-}
-
-func (log *Log) Warn(logStr string) {
-	log.write(WARNING, &logStr)
+func (log *Log) Error(logStr string, args ...interface{}) {
+	log.write(ERROR, &logStr, args...)
 
 }
 
-func (log *Log) Notice(logStr string) {
-	log.write(NOTICE, &logStr)
+func (log *Log) Warning(logStr string, args ...interface{}) {
+	log.write(WARNING, &logStr, args...)
+
 }
 
-func (log *Log) Info(logStr string) {
-	log.write(NOTICE, &logStr)
+func (log *Log) Notice(logStr string, args ...interface{}) {
+	log.write(NOTICE, &logStr, args...)
 }
 
-func (log *Log) Debug(logStr string) {
-	log.write(NOTICE, &logStr)
+func (log *Log) Info(logStr string, args ...interface{}) {
+	log.write(NOTICE, &logStr, args...)
+}
+
+func (log *Log) Debug(logStr string, args ...interface{}) {
+	log.write(NOTICE, &logStr, args...)
 }
 
 /**
@@ -238,11 +239,15 @@ func (log *Log) Close() {
 /**
  * write to LogChan
  */
-func (log *Log) write(level Level, logStr *string) {
+func (log *Log) write(level Level, logStr *string, args ...interface{}) {
 
 	//Skip unnecessary level
 	if (byte(level) & (*log).Level) != byte(level) {
 		return
+	}
+
+	if len(args) > 0 {
+		*logStr = fmt.Sprintf(*logStr, args...)
 	}
 
 	//format logStr like 'Error 06/01/02 15:04:05  balabalabala'
