@@ -22,6 +22,7 @@ glog
 	4. supports 4 types of split (Day, Hour, Minute, Size of MB)
 	5. supports for custom flush time, auto flush when the writeBufs using 90%
 	6. supports for custom the logfile mode, default:0400
+	7. supports variable parameter like fmt.Sprintf example: log.Error("str:%d, %s", 1, "a")
 
 <b>benchmark</b>
 	on OSX 10.9, Intel Core i7 2.3GHz, 4GB Memory, HDD disk, 
@@ -59,6 +60,7 @@ glog
 	4. 支持四种类型的自动切分文件 (按天、按指定的小时数、按指定的分钟数、按指定的文件大小)
 	5. 支持自定义刷盘时间，并且当写缓冲区使用到达90%时自动刷盘，以避免阻塞
 	6. 支持自定义日志文件的读写属性, 默认为 0400
+	7. 支持像fmt.Sprintf一样的可变参数 例如: log.Error("str:%d, %s", 1, "a")
 
 <b>性能测试</b>
 	在我的OSX 10.9, Intel Core i7 2.3GHz, 4GB 内存, HDD 硬盘上
