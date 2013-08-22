@@ -217,11 +217,11 @@ func (log *Log) Notice(logStr string, args ...interface{}) {
 }
 
 func (log *Log) Info(logStr string, args ...interface{}) {
-	log.write(NOTICE, &logStr, args...)
+	log.write(INFO, &logStr, args...)
 }
 
 func (log *Log) Debug(logStr string, args ...interface{}) {
-	log.write(NOTICE, &logStr, args...)
+	log.write(DEBUG, &logStr, args...)
 }
 
 /**
