@@ -47,7 +47,7 @@ type Level byte
 type Log struct {
 	//public
 	Buf       int //if too small, will blocking the write log
-	FlushTime time.Duration
+	FlushTime int
 	Split     string //split log file by "day", "hour", "15min" or "100m"
 	Level     byte   //level mode, example: "ERROR"+"WARNING"+"NOTICE" = 1+2+4 = 7
 	FileMode  os.FileMode
@@ -136,7 +136,7 @@ func New(args ...interface{}) (*Log, error) {
 		//default Log
 		log = Log{
 			Buf:       DEFAULT_BUFFER_SIZE,
-			FlushTime: 1 * time.Second,
+			FlushTime: 1000,
 			Split:     "day", //split log file by "day", "hour", "10min" minutes or "10m" bytes
 			Level:     7,     // WARNING + ERROR + NOTICE
 			FileMode:  0400,  //permission bits, see os.FileMode
@@ -192,7 +192,7 @@ func New(args ...interface{}) (*Log, error) {
 	// run LogChan worker process
 	go runLogChan()
 	// start ticker for flush
-	logFlushTicker = time.NewTicker(log.FlushTime)
+	logFlushTicker = time.NewTicker(time.Duration(log.FlushTime) * time.Millisecond)
 	glog = &log
 	return glog, err
 }
