@@ -50,7 +50,7 @@ type Log struct {
 	FlushTime int
 	Split     string //split log file by "day", "hour", "15min" or "100m"
 	Level     byte   //level mode, example: "ERROR"+"WARNING"+"NOTICE" = 1+2+4 = 7
-	FileName  string
+	FileName  string //default logfile
 	FileMode  os.FileMode
 	//private
 	isClosed  bool
