@@ -60,8 +60,8 @@ type Log struct {
 //struct of Level Config
 type LevelConf struct {
 	Level    Level
-	IsPrint  bool // is print to STDOUT
-	IsWrite  bool // is write to file
+	IsPrint  bool //is print to STDOUT
+	IsWrite  bool //is write to file
 	FileName string
 }
 
