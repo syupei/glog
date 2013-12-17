@@ -128,11 +128,11 @@ func New(args ...interface{}) (*Log, error) {
 	var (
 		//default Level Config
 		levelConf = map[Level]LevelConf{
-			ERROR:   LevelConf{Level: Level(ERROR), IsPrint: true, FileName: ""},
-			WARNING: LevelConf{Level: Level(WARNING), IsPrint: true, FileName: ""},
-			NOTICE:  LevelConf{Level: Level(NOTICE), IsPrint: true, FileName: ""},
-			INFO:    LevelConf{Level: Level(INFO), IsPrint: true, FileName: ""},
-			DEBUG:   LevelConf{Level: Level(DEBUG), IsPrint: true, FileName: ""},
+			ERROR:   LevelConf{Level: Level(ERROR), IsPrint: true, IsWrite: true, FileName: ""},
+			WARNING: LevelConf{Level: Level(WARNING), IsPrint: true, IsWrite: true, FileName: ""},
+			NOTICE:  LevelConf{Level: Level(NOTICE), IsPrint: true, IsWrite: true, FileName: ""},
+			INFO:    LevelConf{Level: Level(INFO), IsPrint: true, IsWrite: true, FileName: ""},
+			DEBUG:   LevelConf{Level: Level(DEBUG), IsPrint: true, IsWrite: true, FileName: ""},
 		}
 
 		//default Log
