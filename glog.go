@@ -50,6 +50,7 @@ type Log struct {
 	FlushTime int
 	Split     string //split log file by "day", "hour", "15min" or "100m"
 	Level     byte   //level mode, example: "ERROR"+"WARNING"+"NOTICE" = 1+2+4 = 7
+	FileName  string
 	FileMode  os.FileMode
 	//private
 	isClosed  bool
@@ -59,7 +60,8 @@ type Log struct {
 //struct of Level Config
 type LevelConf struct {
 	Level    Level
-	IsPrint  bool //is print to STDOUT
+	IsPrint  bool // is print to STDOUT
+	IsWrite  bool // is write to file
 	FileName string
 }
 
@@ -152,7 +154,7 @@ func New(args ...interface{}) (*Log, error) {
 			//set log of custom
 			l := args[0].(Log)
 
-			log.Buf, log.FlushTime, log.Split, log.Level, log.FileMode = l.Buf, l.FlushTime, l.Split, l.Level, l.FileMode
+			log.Buf, log.FlushTime, log.Split, log.Level, log.FileName, log.FileMode = l.Buf, l.FlushTime, l.Split, l.Level, l.FileName, l.FileMode
 
 			for t, c := range levelConf {
 				if _, ok := log.levelConf[t]; !ok {
@@ -180,6 +182,20 @@ func New(args ...interface{}) (*Log, error) {
 
 		default:
 			err = errors.New("args[0] error, must be struct of Log")
+		}
+
+		//adjust logfile
+		for l, c := range log.levelConf {
+
+			if c.FileName == "" {
+				c.FileName = log.FileName
+			}
+
+			if c.IsWrite != true {
+				c.FileName = ""
+			}
+
+			log.levelConf[l] = c
 		}
 	}
 
