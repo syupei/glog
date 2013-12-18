@@ -209,6 +209,12 @@ func New(args ...interface{}) (*Log, error) {
 				log.levelConf[k] = c
 			}
 
+		//if the Args[0] is Levels Config
+		case map[Level]LevelConf:
+			for t, c := range args[1].(map[Level]LevelConf) {
+				log.levelConf[t] = c
+			}
+
 		//default
 		default:
 			err = errors.New("args[0] error, must be struct of Log")
