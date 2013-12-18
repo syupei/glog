@@ -146,12 +146,36 @@ func New(args ...interface{}) (*Log, error) {
 	//has user custom args
 	if len(args) > 0 {
 		switch args[0].(type) {
+
+		//if the args[0] is Log Config
 		case Log:
 			//set log of custom
 			l := args[0].(Log)
 
-			log.Buf, log.FlushTime, log.Split, log.Level, log.FileName, log.FileMode = l.Buf, l.FlushTime, l.Split, l.Level, l.FileName, l.FileMode
+			//merge default conf
+			if l.Buf > 0 {
+				log.Buf = l.Buf
+			}
 
+			if l.FlushTime > 0 {
+				log.FlushTime = l.FlushTime
+			}
+
+			if l.Split != "" {
+				log.Split = l.Split
+			}
+
+			if l.Level != 0 {
+				log.Level = l.Level
+			}
+
+			if l.FileMode != 0 {
+				log.FileMode = l.FileMode
+			}
+
+			log.FileName = l.FileName
+
+			//set default level conf
 			for t, c := range levelConf {
 				if _, ok := log.levelConf[t]; !ok {
 					log.levelConf[t] = c
@@ -178,6 +202,14 @@ func New(args ...interface{}) (*Log, error) {
 				}
 			}
 
+		//if the Args[0] is Level Config
+		case LevelConf:
+			c := args[0].(LevelConf)
+			for k, _ := range log.levelConf {
+				log.levelConf[k] = c
+			}
+
+		//default
 		default:
 			err = errors.New("args[0] error, must be struct of Log")
 		}
