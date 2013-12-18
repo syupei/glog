@@ -59,7 +59,6 @@ type Log struct {
 
 //struct of Level Config
 type LevelConf struct {
-	Level    Level
 	IsPrint  bool //is print to STDOUT
 	IsWrite  bool //is write to file
 	FileName string
@@ -128,11 +127,7 @@ func New(args ...interface{}) (*Log, error) {
 	var (
 		//default Level Config
 		levelConf = map[Level]LevelConf{
-			ERROR:   LevelConf{Level: Level(ERROR), IsPrint: true, IsWrite: true, FileName: ""},
-			WARNING: LevelConf{Level: Level(WARNING), IsPrint: true, IsWrite: true, FileName: ""},
-			NOTICE:  LevelConf{Level: Level(NOTICE), IsPrint: true, IsWrite: true, FileName: ""},
-			INFO:    LevelConf{Level: Level(INFO), IsPrint: true, IsWrite: true, FileName: ""},
-			DEBUG:   LevelConf{Level: Level(DEBUG), IsPrint: true, IsWrite: true, FileName: ""},
+			ERROR: LevelConf{}, WARNING: LevelConf{}, NOTICE: LevelConf{}, INFO: LevelConf{}, DEBUG: LevelConf{},
 		}
 
 		//default Log
@@ -174,7 +169,9 @@ func New(args ...interface{}) (*Log, error) {
 				//else, the args of each part as a level of a config
 				case LevelConf:
 					c := arg.(LevelConf)
-					log.levelConf[c.Level] = arg.(LevelConf)
+					for k, _ := range log.levelConf {
+						log.levelConf[k] = c
+					}
 				default:
 					err = errors.New(fmt.Sprintf("arg[%d] error, must be type of LogLevelConf", i))
 					break
@@ -315,9 +312,8 @@ func runLogChan() {
 	}()
 
 	//merge logfiles and init
-	for _, levelConf := range glog.levelConf {
+	for level, levelConf := range glog.levelConf {
 		fileName := levelConf.FileName
-		level := levelConf.Level
 		gruntime.fileName[level] = fileName
 		gruntime.files[fileName] = nil
 		gruntime.writeBufs[fileName] = make([]string, glog.Buf)
