@@ -137,7 +137,7 @@ func New(args ...interface{}) (*Log, error) {
 			Split:     "day", //split log file by "day", "hour", "10min" minutes or "10m" bytes
 			Level:     7,     // WARNING + ERROR + NOTICE
 			FileName:  "",
-			FileMode:  0400, //permission bits, see os.FileMode
+			FileMode:  0644, //permission bits, see os.FileMode
 			levelConf: levelConf,
 			isClosed:  false,
 		}
