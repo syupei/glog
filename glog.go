@@ -321,7 +321,8 @@ func (log *Log) write(level Level, logStr *string, args ...interface{}) {
 
 //format logStr like 'Error 06/01/02 15:04:05.67823  balabalabala'
 func format(level string, logStr string) string {
-	return fmt.Sprintf("%-7s\t%s\t%s\n", level, time.Now().Format("06/01/02 15:04:05"), logStr)
+	t := time.Now()
+	return fmt.Sprintf("%-7s\t%s.%d\t%s\n", level, t.Format("06/01/02 15:04:05"), t.Nanosecond()/1000, logStr)
 }
 
 /**
